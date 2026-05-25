@@ -1,16 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const BASE = 2500;
 const PHONE = "+919746488282";
-
 const LOGO_SRC = "/logo.png";
 
 const DURATION_DISCOUNTS = [
   { months: 1, discount: 0 },
   { months: 2, discount: 0.08 },
-  { months: 3, discount: 0.2 },
+  { months: 3, discount: 0.20 },
   { months: 4, discount: 0.26 },
-  { months: 5, discount: 0.3 },
+  { months: 5, discount: 0.30 },
   { months: 6, discount: 0.35 },
   { months: 7, discount: 0.37 },
   { months: 8, discount: 0.39 },
@@ -30,6 +29,32 @@ const SCREEN_DISCOUNTS = [
   { screens: 7, discount: 0.28 },
 ];
 
+const SECTORS = [
+  "Supplements & Nutrition",
+  "Gymwear & Apparel",
+  "Salon & Grooming",
+  "Skincare & Wellness",
+  "Café & Healthy Food",
+  "Clinic & Healthcare",
+  "Real Estate",
+  "Education & Coaching",
+  "Electronics & Tech",
+  "Hotels & Resorts",
+  "Jewellery & Fashion",
+  "Finance & Banking",
+  "Other",
+];
+
+const GYMS = [
+  { name: "Core Fitness Club", location: "Cherooty Road" },
+  { name: "Fitpro Fitness", location: "Eranhipalam" },
+  { name: "FitFat Studio", location: "Thondayad" },
+  { name: "Greens Fitness", location: "Mankavu Road" },
+  { name: "Alpha Fitness Zone", location: "Nanminda" },
+  { name: "Alpha Fitness Zone", location: "Atholi" },
+  { name: "Alpha Fitness Zone", location: "Chelannur" },
+];
+
 function calcPrice(screens, months) {
   const dd =
     DURATION_DISCOUNTS.find((d) => d.months === months)?.discount || 0;
@@ -39,178 +64,407 @@ function calcPrice(screens, months) {
 
   const combined = Math.min(dd + sd, 0.7);
 
-  const monthlyPricePerScreen = Math.round(
-    BASE * (1 - combined)
-  );
+  const perScreen = Math.round(BASE * (1 - combined));
 
-  const total = monthlyPricePerScreen * screens * months;
+  const total = perScreen * screens * months;
 
-  const original = BASE * screens * months;
-
-  return {
-    monthlyPricePerScreen,
-    total,
-    savings: original - total,
-    combinedDiscount: combined,
-  };
+  return { perScreen, total };
 }
 
-export default function App() {
-  const [screens, setScreens] = useState(1);
-  const [months, setMonths] = useState(1);
+function NavBar({ page, setPage }) {
+  return (
+    <nav
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 60,
+        background: "#fff",
+        borderBottom: "1px solid #eee",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "0 20px",
+        zIndex: 100,
+      }}
+    >
+      <img
+        src={LOGO_SRC}
+        alt="DISCIPL"
+        style={{
+          height: 34,
+          objectFit: "contain",
+        }}
+      />
 
-  const pricing = calcPrice(screens, months);
+      <div style={{ display: "flex", gap: 10 }}>
+        <button
+          onClick={() => setPage("screens")}
+          style={{
+            background:
+              page === "screens" ? "#C0202A" : "#fff",
+            color:
+              page === "screens" ? "#fff" : "#111",
+            border: "1px solid #ddd",
+            padding: "8px 14px",
+            borderRadius: 8,
+            cursor: "pointer",
+          }}
+        >
+          Screens
+        </button>
 
+        <button
+          onClick={() => setPage("pricing")}
+          style={{
+            background:
+              page === "pricing" ? "#C0202A" : "#fff",
+            color:
+              page === "pricing" ? "#fff" : "#111",
+            border: "1px solid #ddd",
+            padding: "8px 14px",
+            borderRadius: 8,
+            cursor: "pointer",
+          }}
+        >
+          Pricing
+        </button>
+      </div>
+    </nav>
+  );
+}
+
+function HomePage({ setPage }) {
   return (
     <div
       style={{
         minHeight: "100vh",
-        background: "#f5f5f5",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
         padding: 20,
-        fontFamily: "Arial",
+        textAlign: "center",
       }}
     >
-      <div
+      <img
+        src={LOGO_SRC}
+        alt="DISCIPL"
         style={{
-          maxWidth: 500,
-          margin: "0 auto",
-          background: "#fff",
-          borderRadius: 20,
-          padding: 30,
-          boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+          width: 220,
+          marginBottom: 20,
+        }}
+      />
+
+      <h1
+        style={{
+          fontSize: 40,
+          marginBottom: 10,
         }}
       >
-        <div style={{ textAlign: "center", marginBottom: 30 }}>
-          <img
-            src={LOGO_SRC}
-            alt="Logo"
+        DISCIPL Screens
+      </h1>
+
+      <p
+        style={{
+          color: "#777",
+          maxWidth: 400,
+          marginBottom: 30,
+        }}
+      >
+        Smart advertising platform for gyms.
+      </p>
+
+      <div
+        style={{
+          display: "flex",
+          gap: 12,
+        }}
+      >
+        <button
+          onClick={() => setPage("screens")}
+          style={{
+            background: "#fff",
+            border: "1px solid #ddd",
+            padding: "14px 24px",
+            borderRadius: 10,
+            cursor: "pointer",
+          }}
+        >
+          Our Screens
+        </button>
+
+        <button
+          onClick={() => setPage("pricing")}
+          style={{
+            background: "#C0202A",
+            color: "#fff",
+            border: "none",
+            padding: "14px 24px",
+            borderRadius: 10,
+            cursor: "pointer",
+          }}
+        >
+          Pricing
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ScreensPage() {
+  return (
+    <div
+      style={{
+        paddingTop: 90,
+        paddingInline: 20,
+        maxWidth: 700,
+        margin: "0 auto",
+      }}
+    >
+      <h1>Screens Network</h1>
+
+      <div
+        style={{
+          display: "grid",
+          gap: 12,
+          marginTop: 20,
+        }}
+      >
+        {GYMS.map((gym, index) => (
+          <div
+            key={index}
             style={{
-              width: 120,
-              marginBottom: 15,
+              padding: 18,
+              border: "1px solid #eee",
+              borderRadius: 12,
+              background: "#fafafa",
+            }}
+          >
+            <div
+              style={{
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {gym.name}
+            </div>
+
+            <div
+              style={{
+                color: "#777",
+                marginTop: 4,
+              }}
+            >
+              {gym.location}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PricingPage() {
+  const [screens, setScreens] = useState(5);
+  const [months, setMonths] = useState(3);
+  const [brand, setBrand] = useState("");
+  const [sector, setSector] = useState("");
+
+  const { perScreen, total } = calcPrice(
+    screens,
+    months
+  );
+
+  function handleWhatsApp() {
+    const msg = `Hi DISCIPL Screens,
+
+Brand: ${brand}
+Sector: ${sector}
+
+Screens: ${screens}
+Duration: ${months} months
+
+Per Screen: ₹${perScreen}
+Total: ₹${total}`;
+
+    window.open(
+      `https://wa.me/${PHONE.replace(
+        "+",
+        ""
+      )}?text=${encodeURIComponent(msg)}`,
+      "_blank"
+    );
+  }
+
+  return (
+    <div
+      style={{
+        paddingTop: 90,
+        paddingInline: 20,
+        maxWidth: 700,
+        margin: "0 auto",
+      }}
+    >
+      <h1>Pricing</h1>
+
+      <div
+        style={{
+          display: "grid",
+          gap: 16,
+          marginTop: 20,
+        }}
+      >
+        <input
+          value={brand}
+          onChange={(e) =>
+            setBrand(e.target.value)
+          }
+          placeholder="Brand Name"
+          style={{
+            padding: 14,
+            borderRadius: 10,
+            border: "1px solid #ddd",
+          }}
+        />
+
+        <select
+          value={sector}
+          onChange={(e) =>
+            setSector(e.target.value)
+          }
+          style={{
+            padding: 14,
+            borderRadius: 10,
+            border: "1px solid #ddd",
+          }}
+        >
+          <option value="">Select Sector</option>
+
+          {SECTORS.map((sector) => (
+            <option key={sector} value={sector}>
+              {sector}
+            </option>
+          ))}
+        </select>
+
+        <div>
+          <label>
+            Screens: {screens}
+          </label>
+
+          <input
+            type="range"
+            min="1"
+            max="7"
+            value={screens}
+            onChange={(e) =>
+              setScreens(Number(e.target.value))
+            }
+            style={{
+              width: "100%",
             }}
           />
-
-          <h1
-            style={{
-              margin: 0,
-              fontSize: 32,
-            }}
-          >
-            DISCIPL Screens
-          </h1>
-
-          <p style={{ color: "#666" }}>
-            Smart Gym Advertising Platform
-          </p>
         </div>
 
-        <div style={{ marginBottom: 20 }}>
-          <label>Number of Screens</label>
+        <div>
+          <label>
+            Months: {months}
+          </label>
 
-          <select
-            value={screens}
-            onChange={(e) => setScreens(Number(e.target.value))}
-            style={{
-              width: "100%",
-              padding: 12,
-              marginTop: 8,
-              borderRadius: 10,
-            }}
-          >
-            {[1, 2, 3, 4, 5, 6, 7].map((n) => (
-              <option key={n} value={n}>
-                {n} Screen{n > 1 ? "s" : ""}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div style={{ marginBottom: 30 }}>
-          <label>Duration</label>
-
-          <select
+          <input
+            type="range"
+            min="1"
+            max="12"
             value={months}
-            onChange={(e) => setMonths(Number(e.target.value))}
+            onChange={(e) =>
+              setMonths(Number(e.target.value))
+            }
             style={{
               width: "100%",
-              padding: 12,
-              marginTop: 8,
-              borderRadius: 10,
             }}
-          >
-            {[...Array(12)].map((_, i) => (
-              <option key={i + 1} value={i + 1}>
-                {i + 1} Month{i > 0 ? "s" : ""}
-              </option>
-            ))}
-          </select>
+          />
         </div>
 
         <div
           style={{
             background: "#111",
             color: "#fff",
-            padding: 25,
-            borderRadius: 20,
-            marginBottom: 20,
+            padding: 24,
+            borderRadius: 14,
           }}
         >
-          <h2 style={{ marginTop: 0 }}>
-            Pricing Summary
-          </h2>
+          <div
+            style={{
+              marginBottom: 10,
+            }}
+          >
+            Per Screen / Month
+          </div>
 
-          <p>
-            Monthly Per Screen:
-            <strong>
-              {" "}
-              ₹{pricing.monthlyPricePerScreen}
-            </strong>
-          </p>
+          <div
+            style={{
+              fontSize: 34,
+              fontWeight: "bold",
+              marginBottom: 20,
+            }}
+          >
+            ₹{perScreen}
+          </div>
 
-          <p>
-            Total:
-            <strong> ₹{pricing.total}</strong>
-          </p>
+          <div>Total Investment</div>
 
-          <p>
-            Savings:
-            <strong> ₹{pricing.savings}</strong>
-          </p>
-
-          <p>
-            Discount:
-            <strong>
-              {" "}
-              {Math.round(
-                pricing.combinedDiscount * 100
-              )}
-              %
-            </strong>
-          </p>
+          <div
+            style={{
+              fontSize: 34,
+              fontWeight: "bold",
+            }}
+          >
+            ₹{total}
+          </div>
         </div>
 
-        <a
-          href={`https://wa.me/${PHONE.replace(
-            "+",
-            ""
-          )}`}
-          target="_blank"
-          rel="noreferrer"
+        <button
+          onClick={handleWhatsApp}
           style={{
-            display: "block",
-            width: "100%",
-            textAlign: "center",
-            background: "#C0202A",
+            background: "#25D366",
             color: "#fff",
-            padding: 15,
+            border: "none",
+            padding: 16,
             borderRadius: 12,
-            textDecoration: "none",
+            cursor: "pointer",
+            fontSize: 16,
             fontWeight: "bold",
           }}
         >
-          Contact on WhatsApp
-        </a>
+          Request Quote on WhatsApp
+        </button>
       </div>
+    </div>
+  );
+}
+
+export default function App() {
+  const [page, setPage] = useState("home");
+
+  return (
+    <div
+      style={{
+        fontFamily: "Arial",
+        minHeight: "100vh",
+        background: "#fff",
+      }}
+    >
+      <NavBar page={page} setPage={setPage} />
+
+      {page === "home" && (
+        <HomePage setPage={setPage} />
+      )}
+
+      {page === "screens" && <ScreensPage />}
+
+      {page === "pricing" && <PricingPage />}
     </div>
   );
 }
